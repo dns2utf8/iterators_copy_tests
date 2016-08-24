@@ -104,13 +104,15 @@ mod tests {
         {
             let v = vec![ Counter::new() ];
 
+            // nullptr
             let mut p_e0: *const Counter = 0 as *const Counter;
             for &ref e in &v {
                 e.dummy_borrow();
                 p_e0 = e;
             }
 
-            let mut p_e1: *const Counter = 0 as *const Counter;
+            // oneptr
+            let mut p_e1: *const Counter = 1 as *const Counter;
             for &ref e in &v {
                 e.dummy_borrow();
                 p_e1 = e;
