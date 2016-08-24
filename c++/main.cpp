@@ -37,8 +37,29 @@ int main() {
       e.dummy();
     }
 
+
+    cout << "vector destroy\n";
+  }
+  {
+    reset_global_counter("Drei");
+    vector<Counter> v{ Counter{} };
+
+
     cout << "begin decltype(auto) loop\n";
     for (decltype(auto) e : v) {
+      e.dummy();
+    }
+
+
+    cout << "vector destroy\n";
+  }
+
+  {
+    reset_global_counter("Vier");
+    vector<Counter> v{ Counter{} };
+
+    cout << "begin auto & loop\n";
+    for (auto & e : v) {
       e.dummy();
     }
 
