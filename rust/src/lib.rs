@@ -53,12 +53,12 @@ mod tests {
 
     //*
     impl Copy for Counter {
-    }
+    } // */
 
     /*/
     impl Drop for Counter {
         fn drop(&mut self) {
-            println!("Count({id}): {count}", count=self.c, id=self.id);
+            println!("Counter({id}): {count}", count=self.c, id=self.id);
         }
     } // */
 
@@ -99,16 +99,45 @@ mod tests {
     }
 
     #[test]
+    fn iterate_no_copy() {
+        let l = reset_counter_and_begin();
+        {
+            let v = vec![ Counter::new() ];
+
+            let mut p_e0: *const Counter = 0 as *const Counter;
+            for &ref e in &v {
+                e.dummy_borrow();
+                p_e0 = e;
+            }
+
+            let mut p_e1: *const Counter = 0 as *const Counter;
+            for &ref e in &v {
+                e.dummy_borrow();
+                p_e1 = e;
+            }
+
+            assert_eq!(p_e0, p_e1); // Ensure the element is not copied
+        }
+        assert_eq!(1, get())
+    }
+
+    #[test]
     fn iterate_let_mut_push() {
         let l = reset_counter_and_begin();
         {
             let c = Counter::new();
+            let p_c: *const Counter = &c;
             let mut v = vec![ Counter::new() ];
             v.push(c);
 
             for mut e in v {
                 e.dummy_mut();
+                let p_e: *const Counter = &e;
+                assert!(p_c != p_e); // All elements have been copied with or without the copy trait
             }
+
+            // Does not compile: moved value
+            //println!("c.id: {}", c.id);
         }
         assert_eq!(2, get())
     }
@@ -130,8 +159,9 @@ mod tests {
         assert_eq!(2, get());
     }
 
+    //*
     #[test]
-    /// Copy does not involve clone
+    /// Copy does not involve clone()
     fn copy() {
         let l = reset_counter_and_begin();
         let o = Counter::new();
@@ -142,11 +172,17 @@ mod tests {
         assert_eq!(0, o.c);
         assert_eq!(0, c.c);
 
+        {
+          let p_o: *const Counter = &o;
+          let p_c: *const Counter = &c;
+          assert!(p_o != p_c);
+        }
+
         assert_eq!(0, o.id);
         assert_eq!(42, c.id);
 
         assert_eq!(1, get());
     }
-
+    // */
 
 }
