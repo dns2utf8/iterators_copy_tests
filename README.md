@@ -1,3 +1,3 @@
 # iterators
 
-Complares the copy behavior of iterators in C++.
+Complares the copy behavior of iterators in C++ and rust.
